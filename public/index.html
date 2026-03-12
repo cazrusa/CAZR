@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
 <meta charset="UTF-8"/>
@@ -193,6 +194,7 @@ main{max-width:900px;margin:0 auto;padding:40px 20px 80px;position:relative;z-in
 <main>
 
   <!-- SEARCH PAGE -->
+
   <div class="page active" id="page-search">
     <div class="hero">
       <div class="hero-tag" data-i18n="hero_tag">🔥 Encuentra el mejor precio</div>
@@ -200,61 +202,65 @@ main{max-width:900px;margin:0 auto;padding:40px 20px 80px;position:relative;z-in
       <p data-i18n="hero_sub">Busca por texto, código de barras o foto. Compara Amazon, Walmart y Best Buy al instante.</p>
     </div>
 
-    <div class="search-box">
-      <span class="search-label" data-i18n="search_label">¿Qué quieres comprar?</span>
-      <div class="input-row">
-        <input class="search-input" id="searchInput" type="text"
-          data-placeholder-i18n="search_placeholder"
-          placeholder="Ej: iPad Pro M2 256GB WiFi..."
-          onkeydown="if(event.key==='Enter') doSearch()"/>
-        <button class="btn-search" id="searchBtn" onclick="doSearch()" data-i18n="btn_search">🔍 BUSCAR</button>
-      </div>
-      <div class="input-modes">
-        <button class="mode-btn active" id="mode-text" onclick="setMode('text')">⌨️ <span data-i18n="mode_text">Texto</span></button>
-        <button class="mode-btn" id="mode-barcode" onclick="setMode('barcode')">▦ <span data-i18n="mode_barcode">Código de barras</span></button>
-        <button class="mode-btn" id="mode-image" onclick="setMode('image')">🖼️ <span data-i18n="mode_image">Subir imagen</span></button>
-        <button class="mode-btn" id="mode-camera" onclick="setMode('camera')">📷 <span data-i18n="mode_camera">Tomar foto</span></button>
-      </div>
-      <div class="barcode-row" id="barcodeRow">
-        <input class="barcode-input" id="barcodeInput" type="text" data-placeholder-i18n="barcode_placeholder" placeholder="Ej: 194252038598"/>
-        <button class="btn-search" onclick="searchBarcode()" data-i18n="btn_search">BUSCAR</button>
-      </div>
-      <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
-        <div class="upload-icon">🖼️</div>
-        <p data-i18n="upload_hint">Toca para subir una foto del producto<br><small>JPG, PNG, WEBP</small></p>
-        <img id="preview-img" alt="preview"/>
-        <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)"/>
-      </div>
-      <div class="upload-area" id="cameraArea" onclick="openCamera()" style="display:none">
-        <div class="upload-icon">📷</div>
-        <p data-i18n="camera_hint">Toca para abrir la cámara</p>
-        <img id="camera-preview" alt="capture"/>
-      </div>
-    </div>
+```
+<div class="search-box">
+  <span class="search-label" data-i18n="search_label">¿Qué quieres comprar?</span>
+  <div class="input-row">
+    <input class="search-input" id="searchInput" type="text"
+      data-placeholder-i18n="search_placeholder"
+      placeholder="Ej: iPad Pro M2 256GB WiFi..."
+      onkeydown="if(event.key==='Enter') doSearch()"/>
+    <button class="btn-search" id="searchBtn" onclick="doSearch()" data-i18n="btn_search">🔍 BUSCAR</button>
+  </div>
+  <div class="input-modes">
+    <button class="mode-btn active" id="mode-text" onclick="setMode('text')">⌨️ <span data-i18n="mode_text">Texto</span></button>
+    <button class="mode-btn" id="mode-barcode" onclick="setMode('barcode')">▦ <span data-i18n="mode_barcode">Código de barras</span></button>
+    <button class="mode-btn" id="mode-image" onclick="setMode('image')">🖼️ <span data-i18n="mode_image">Subir imagen</span></button>
+    <button class="mode-btn" id="mode-camera" onclick="setMode('camera')">📷 <span data-i18n="mode_camera">Tomar foto</span></button>
+  </div>
+  <div class="barcode-row" id="barcodeRow">
+    <input class="barcode-input" id="barcodeInput" type="text" data-placeholder-i18n="barcode_placeholder" placeholder="Ej: 194252038598"/>
+    <button class="btn-search" onclick="searchBarcode()" data-i18n="btn_search">BUSCAR</button>
+  </div>
+  <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+    <div class="upload-icon">🖼️</div>
+    <p data-i18n="upload_hint">Toca para subir una foto del producto<br><small>JPG, PNG, WEBP</small></p>
+    <img id="preview-img" alt="preview"/>
+    <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)"/>
+  </div>
+  <div class="upload-area" id="cameraArea" onclick="openCamera()" style="display:none">
+    <div class="upload-icon">📷</div>
+    <p data-i18n="camera_hint">Toca para abrir la cámara</p>
+    <img id="camera-preview" alt="capture"/>
+  </div>
+</div>
 
-    <div class="status-bar" id="statusBar">
-      <div class="spinner"></div>
-      <span id="statusText" data-i18n="status_searching">Buscando los mejores precios...</span>
-    </div>
+<div class="status-bar" id="statusBar">
+  <div class="spinner"></div>
+  <span id="statusText" data-i18n="status_searching">Buscando los mejores precios...</span>
+</div>
 
-    <div id="results">
-      <div class="welcome" id="welcomeState">
-        <div class="welcome-icon">🎯</div>
-        <h2 data-i18n="welcome_title">LISTO PARA CAZAR</h2>
-        <p data-i18n="welcome_sub">Escribe un producto, su código de barras, o sube una foto.</p>
-        <div class="tip-chips">
-          <div class="tip-chip" onclick="quickSearch('iPhone 16 Pro 256GB')">📱 iPhone 16 Pro</div>
-          <div class="tip-chip" onclick="quickSearch('iPad Air M2 WiFi 64GB')">💻 iPad Air M2</div>
-          <div class="tip-chip" onclick="quickSearch('Samsung 65 inch 4K QLED TV')">📺 Samsung 65"</div>
-          <div class="tip-chip" onclick="quickSearch('Sony WH-1000XM5 headphones')">🎧 Sony XM5</div>
-          <div class="tip-chip" onclick="quickSearch('Nintendo Switch OLED')">🎮 Switch OLED</div>
-        </div>
-      </div>
-      <div id="resultsList"></div>
+<div id="results">
+  <div class="welcome" id="welcomeState">
+    <div class="welcome-icon">🎯</div>
+    <h2 data-i18n="welcome_title">LISTO PARA CAZAR</h2>
+    <p data-i18n="welcome_sub">Escribe un producto, su código de barras, o sube una foto.</p>
+    <div class="tip-chips">
+      <div class="tip-chip" onclick="quickSearch('iPhone 16 Pro 256GB')">📱 iPhone 16 Pro</div>
+      <div class="tip-chip" onclick="quickSearch('iPad Air M2 WiFi 64GB')">💻 iPad Air M2</div>
+      <div class="tip-chip" onclick="quickSearch('Samsung 65 inch 4K QLED TV')">📺 Samsung 65"</div>
+      <div class="tip-chip" onclick="quickSearch('Sony WH-1000XM5 headphones')">🎧 Sony XM5</div>
+      <div class="tip-chip" onclick="quickSearch('Nintendo Switch OLED')">🎮 Switch OLED</div>
     </div>
+  </div>
+  <div id="resultsList"></div>
+</div>
+```
+
   </div>
 
   <!-- AFFILIATE PAGE -->
+
   <div class="page" id="page-affiliate">
     <div class="hero" style="margin-bottom:32px">
       <div class="hero-tag" data-i18n="aff_hero_tag">💰 Gana comisiones</div>
@@ -319,6 +325,7 @@ main{max-width:900px;margin:0 auto;padding:40px 20px 80px;position:relative;z-in
   </div>
 
   <!-- SETTINGS PAGE -->
+
   <div class="page" id="page-settings">
     <div class="hero" style="margin-bottom:32px">
       <div class="hero-tag" data-i18n="cfg_tag">⚙️ Configuración</div>
@@ -358,6 +365,7 @@ main{max-width:900px;margin:0 auto;padding:40px 20px 80px;position:relative;z-in
 </main>
 
 <!-- CAMERA MODAL -->
+
 <div class="camera-modal" id="cameraModal">
   <div class="camera-lbl" data-i18n="cam_title">📷 APUNTA AL PRODUCTO</div>
   <div class="camera-viewfinder">
@@ -384,8 +392,8 @@ main{max-width:900px;margin:0 auto;padding:40px 20px 80px;position:relative;z-in
 const TRANSLATIONS = {
   es: {
     nav_search:'Buscar', nav_affiliate:'Afiliados',
-    hero_tag:'🔥 Encuentra el mejor precio',
-    hero_sub:'Busca por texto, código de barras o foto. Compara Amazon, Walmart y Best Buy al instante.',
+    hero_tag:'🔥 El mejor precio en cualquier tienda',
+    hero_sub:'Busca por texto, código de barras o foto. Encuentra el mejor precio en cualquier tienda del mundo al instante.',
     search_label:'¿Qué quieres comprar?',
     search_placeholder:'Ej: iPad Pro M2 256GB WiFi...',
     btn_search:'🔍 BUSCAR',
@@ -454,8 +462,8 @@ const TRANSLATIONS = {
   },
   en: {
     nav_search:'Search', nav_affiliate:'Affiliates',
-    hero_tag:'🔥 Find the best price',
-    hero_sub:'Search by text, barcode, or photo. Compare Amazon, Walmart & Best Buy instantly.',
+    hero_tag:'🔥 Best price across every store',
+    hero_sub:'Search by text, barcode, or photo. Find the best price across any store in the world, instantly.',
     search_label:'What do you want to buy?',
     search_placeholder:'e.g. iPad Pro M2 256GB WiFi...',
     btn_search:'🔍 SEARCH',
@@ -692,7 +700,17 @@ function buildMessages(query){
 
 function buildSystemPrompt(){
   const lang = currentLang==='en'?'English':'Spanish';
-  return `You are CAZR, an AI price comparison expert for USA (Amazon, Walmart, Best Buy).
+  return `You are CAZR, a world-class AI shopping assistant that finds the absolute best prices across ALL online retailers globally — no limits.
+
+You search everywhere: Amazon, Walmart, Best Buy, Target, Costco, eBay, Newegg, B&H Photo, Adorama, Sam's Club, Home Depot, Lowe's, Staples, Office Depot, Rakuten, AliExpress, MercadoLibre, and any other retailer where a better deal might exist.
+
+You also check:
+- Active coupon codes and promo codes
+- Membership discounts (Prime, Walmart+, Costco, etc.)
+- Cashback opportunities (Rakuten, Honey)
+- Refurbished / open-box deals when they offer significant savings
+- Price history context (is this a good time to buy?)
+
 Respond ONLY with valid JSON (no markdown, no extra text).
 All text fields in your JSON must be in ${lang}.
 
@@ -705,7 +723,7 @@ JSON structure:
       "rank": 1,
       "store": "Amazon",
       "store_emoji": "🛒",
-      "product_title": "Full product title",
+      "product_title": "Full product title as listed",
       "price": 999.99,
       "original_price": 1099.99,
       "discount_percent": 9,
@@ -717,24 +735,29 @@ JSON structure:
       "rating": 4.7,
       "review_count": 2847,
       "coupon": { "available": true, "code": "SAVE10", "description": "10% off with this code" },
-      "membership_discount": "Prime: special price $979",
+      "membership_discount": "Prime members: $979",
+      "cashback": "5% cashback via Rakuten",
       "affiliate_base_url": "https://www.amazon.com/dp/ASIN",
-      "pros": ["Fast Prime delivery","Easy 30-day returns"],
-      "cons": ["Slightly higher price","Limited color stock"],
+      "pros": ["Fast Prime delivery","Easy 30-day returns","Lowest total price"],
+      "cons": ["Only available in silver","No local pickup"],
       "best_deal": true,
-      "deal_reason": "Best price + free shipping + coupon"
+      "deal_reason": "Lowest price found anywhere + free shipping + active coupon"
     }
   ],
-  "search_tips": "Relevant buying tip",
-  "price_alert": "Note on whether price is good/average/high vs historical"
+  "search_tips": "Strategic buying tip for this specific product",
+  "price_alert": "Is this a good time to buy? Price vs historical average",
+  "cashback_tip": "Best cashback opportunity available right now"
 }
 
 Rules:
-- Always 5 results: 2-3 Amazon, 1-2 Walmart, 1 Best Buy
-- Use REALISTIC current 2025/2026 USA prices
-- Only one result has best_deal: true
-- affiliate_base_url must be real functional URLs
-- Respond ONLY the JSON`;
+- Always return exactly 5 results from the BEST stores for this specific product
+- Pick stores based on who actually has the best deal — not a fixed list
+- Vary stores: never return 5 results all from the same store
+- Use REALISTIC current 2025/2026 prices
+- Include refurbished/open-box as an option if savings are 20%+
+- Only one result has best_deal: true — the absolute winner
+- affiliate_base_url must be real, functional product URLs
+- Respond ONLY the JSON, nothing else`;
 }
 
 // ========== RENDER ==========
@@ -850,5 +873,6 @@ function showToast(msg){
 
 calcEarnings();
 </script>
+
 </body>
 </html>
