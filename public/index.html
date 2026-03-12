@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>CAZR — Hunt the Best Price</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#060608;--surface:#0f0f12;--card:#15151a;--border:#222228;--border2:#2e2e38;
+  --accent:#f0b429;--accent2:#ff6b35;--green:#22c55e;--red:#ef4444;
+  --text:#f0ede8;--muted:#6b6870;--muted2:#4a4850;--radius:16px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(240,180,41,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(240,180,41,0.03) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;z-index:0}
+header{position:sticky;top:0;z-index:50;background:rgba(6,6,8,0.92);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:3px;color:var(--accent);text-decoration:none;cursor:pointer}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:10px;display:grid;place-items:center;font-size:18px}
+.header-right{display:flex;align-items:center;gap:8px}
+.nav-btn{padding:8px 14px;border-radius:8px;border:1px solid var(--border2);background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+.nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+.nav-btn.active{background:var(--accent);border-color:var(--accent);color:#000}
+/* LANG SWITCHER */
+.lang-switcher{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.lang-btn{padding:7px 13px;border:none;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.lang-btn.active{background:var(--accent);color:#000}
+main{max-width:900px;margin:0 auto;padding:40px 20px 80px;position:relative;z-index:1}
+.page{display:none}.page.active{display:block}
+/* HERO */
+.hero{text-align:center;margin-bottom:40px;animation:fadeUp .6s ease both}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(240,180,41,0.1);border:1px solid rgba(240,180,41,0.3);border-radius:100px;padding:4px 14px;font-size:11px;font-weight:700;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-bottom:20px}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,14vw,120px);line-height:.85;letter-spacing:6px;background:linear-gradient(135deg,#fff 0%,var(--accent) 50%,var(--accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px}
+.hero p{color:var(--muted);font-size:15px;font-weight:500;max-width:440px;margin:0 auto;line-height:1.6}
+/* SEARCH BOX */
+.search-box{background:var(--surface);border:1px solid var(--border2);border-radius:20px;padding:24px;margin-bottom:32px;animation:fadeUp .6s .1s ease both}
+.search-label{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:block}
+.input-row{display:flex;gap:10px;margin-bottom:14px}
+.search-input{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:14px 18px;color:var(--text);font-family:'Syne',sans-serif;font-size:15px;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--accent)}
+.search-input::placeholder{color:var(--muted2)}
+.btn-search{padding:14px 28px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#000;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap;transition:opacity .2s,transform .1s;letter-spacing:.5px}
+.btn-search:hover{opacity:.9}.btn-search:active{transform:scale(.97)}.btn-search:disabled{opacity:.5;cursor:not-allowed}
+.input-modes{display:flex;gap:8px;flex-wrap:wrap}
+.mode-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1px solid var(--border);border-radius:8px;background:transparent;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+.mode-btn:hover{border-color:var(--accent);color:var(--accent)}
+.mode-btn.active{background:rgba(240,180,41,0.12);border-color:var(--accent);color:var(--accent)}
+.upload-area{display:none;margin-top:14px;border:2px dashed var(--border2);border-radius:12px;padding:32px;text-align:center;cursor:pointer;transition:border-color .2s}
+.upload-area.show{display:block}.upload-area:hover{border-color:var(--accent)}
+.upload-area p{color:var(--muted);font-size:13px}.upload-area .upload-icon{font-size:32px;margin-bottom:8px}
+#fileInput{display:none}
+#preview-img,#camera-preview{max-width:100%;max-height:200px;border-radius:10px;margin-top:12px;display:none}
+.barcode-row{display:none;margin-top:14px;gap:10px}
+.barcode-row.show{display:flex}
+.barcode-input{flex:1;background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:12px 16px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;outline:none}
+.barcode-input:focus{border-color:var(--accent)}
+/* STATUS */
+.status-bar{display:none;align-items:center;gap:10px;padding:14px 18px;background:rgba(240,180,41,0.08);border:1px solid rgba(240,180,41,0.2);border-radius:12px;margin-bottom:24px;font-size:13px;font-weight:600;color:var(--accent);animation:fadeUp .3s ease both}
+.status-bar.show{display:flex}
+.spinner{width:16px;height:16px;border:2px solid rgba(240,180,41,0.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+/* RESULT CARDS */
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+.results-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px}
+.results-count{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.product-query-info{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:var(--muted);line-height:1.5}
+.product-query-info strong{color:var(--text)}
+.result-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:14px;transition:border-color .2s,transform .2s;position:relative;overflow:hidden}
+.result-card:hover{border-color:var(--border2);transform:translateY(-2px)}
+.result-card.best-deal{border-color:rgba(240,180,41,0.4);background:linear-gradient(135deg,rgba(240,180,41,0.05) 0%,var(--card) 60%)}
+.best-deal-badge{position:absolute;top:0;right:24px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#000;font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;border-radius:0 0 8px 8px}
+.card-top{display:flex;gap:16px;margin-bottom:16px}
+.store-badge{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-size:22px;flex-shrink:0;border:1px solid var(--border2)}
+.card-info{flex:1;min-width:0}
+.card-store{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.card-name{font-size:16px;font-weight:700;color:var(--text);margin-bottom:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-price{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:1px;color:var(--accent);line-height:1}
+.card-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.5px}
+.tag-green{background:rgba(34,197,94,0.12);color:var(--green);border:1px solid rgba(34,197,94,0.2)}
+.tag-red{background:rgba(239,68,68,0.1);color:var(--red);border:1px solid rgba(239,68,68,0.2)}
+.tag-blue{background:rgba(99,179,237,0.1);color:#63b3ed;border:1px solid rgba(99,179,237,0.2)}
+.tag-yellow{background:rgba(240,180,41,0.1);color:var(--accent);border:1px solid rgba(240,180,41,0.2)}
+.tag-gray{background:rgba(107,104,112,0.15);color:var(--muted);border:1px solid var(--border)}
+.pros-cons{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.pros,.cons{background:var(--surface);border-radius:10px;padding:12px 14px}
+.pros-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;color:var(--green)}
+.cons-title{font-size:10px;font-weight:800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;color:var(--red)}
+.pros ul,.cons ul{list-style:none;display:flex;flex-direction:column;gap:4px}
+.pros li,.cons li{font-size:12px;font-weight:500;color:var(--muted);display:flex;align-items:flex-start;gap:6px;line-height:1.4}
+.pros li::before{content:'✓';color:var(--green);flex-shrink:0;font-weight:800}
+.cons li::before{content:'✕';color:var(--red);flex-shrink:0;font-weight:800}
+.card-actions{display:flex;gap:10px}
+.btn-buy{flex:1;padding:12px 20px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:10px;color:#000;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .2s;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.btn-buy:hover{opacity:.88}
+.btn-copy{padding:12px 16px;background:var(--surface);border:1px solid var(--border2);border-radius:10px;color:var(--muted);font-family:'Syne',sans-serif;font-size:12px;font-weight:700;cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-copy:hover{border-color:var(--accent);color:var(--accent)}
+.btn-copy.copied{border-color:var(--green);color:var(--green)}
+.coupon-box{background:linear-gradient(135deg,rgba(34,197,94,0.08),rgba(34,197,94,0.03));border:1px dashed rgba(34,197,94,0.4);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.coupon-icon{font-size:20px}
+.coupon-code{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:500;color:var(--green);letter-spacing:2px}
+.coupon-desc{font-size:11px;color:var(--muted);margin-top:2px}
+.affiliate-note{background:linear-gradient(135deg,rgba(240,180,41,0.06),rgba(255,107,53,0.06));border:1px solid rgba(240,180,41,0.2);border-radius:12px;padding:16px 18px;margin-top:6px;font-size:12px;font-weight:500;color:var(--muted);line-height:1.5}
+.affiliate-note strong{color:var(--accent)}
+/* WELCOME */
+.welcome{text-align:center;padding:60px 20px;animation:fadeUp .6s .2s ease both}
+.welcome-icon{font-size:64px;margin-bottom:20px;animation:float 3s ease-in-out infinite}
+.welcome h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;color:var(--text);margin-bottom:8px}
+.welcome p{color:var(--muted);font-size:14px;line-height:1.6;max-width:360px;margin:0 auto}
+.tip-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:20px}
+.tip-chip{padding:8px 16px;background:var(--card);border:1px solid var(--border);border-radius:100px;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .2s}
+.tip-chip:hover{border-color:var(--accent);color:var(--accent)}
+/* CAMERA */
+.camera-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.96);z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.camera-modal.open{display:flex}
+.camera-viewfinder{position:relative;width:min(480px,95vw);border-radius:16px;overflow:hidden;border:2px solid var(--accent);background:#000}
+#cameraVideo{width:100%;display:block;max-height:60vh;object-fit:cover}
+.camera-overlay{position:absolute;inset:0;pointer-events:none}
+.camera-corner{position:absolute;width:28px;height:28px;border-color:var(--accent);border-style:solid;opacity:.8}
+.camera-corner.tl{top:12px;left:12px;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.camera-corner.tr{top:12px;right:12px;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
+.camera-corner.bl{bottom:12px;left:12px;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
+.camera-corner.br{bottom:12px;right:12px;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+.camera-scan-line{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);animation:scan 2s ease-in-out infinite;top:50%}
+.camera-lbl{color:var(--muted);font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;text-align:center}
+.camera-actions{display:flex;gap:12px;align-items:center}
+.btn-capture{width:68px;height:68px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;display:grid;place-items:center;font-size:26px;cursor:pointer;transition:transform .15s;box-shadow:0 0 24px rgba(240,180,41,0.4)}
+.btn-capture:active{transform:scale(.9)}
+.btn-flip,.btn-close-cam{width:44px;height:44px;border-radius:50%;background:var(--surface);border:1px solid var(--border2);display:grid;place-items:center;font-size:18px;cursor:pointer;color:var(--muted);transition:all .2s}
+.btn-flip:hover{border-color:var(--accent);color:var(--accent)}
+.btn-close-cam:hover{border-color:var(--red);color:var(--red)}
+#cameraCanvas{display:none}
+/* TABS */
+.tabs{margin-top:40px}
+.tab-header{display:flex;border-bottom:1px solid var(--border);margin-bottom:24px;overflow-x:auto}
+.tab-btn{padding:12px 20px;background:none;border:none;color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .2s}
+.tab-btn:hover{color:var(--text)}.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
+.tab-content{display:none}.tab-content.active{display:block}
+.guide-intro{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:24px}
+.step{display:flex;gap:16px;padding:18px;background:var(--card);border:1px solid var(--border);border-radius:14px;margin-bottom:12px}
+.step-num{width:32px;height:32px;background:linear-gradient(135deg,var(--accent),var(--accent2));border-radius:8px;display:grid;place-items:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#000;flex-shrink:0}
+.step-body h4{font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px}
+.step-body p{font-size:12px;font-weight:500;color:var(--muted);line-height:1.5}
+.step-link{display:inline-block;margin-top:6px;font-size:12px;font-weight:700;color:var(--accent);text-decoration:none;border:1px solid rgba(240,180,41,0.3);border-radius:6px;padding:4px 10px;transition:background .2s}
+.step-link:hover{background:rgba(240,180,41,0.1)}
+/* SETTINGS */
+.settings-section{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;margin-bottom:16px}
+.settings-section h3{font-size:14px;font-weight:700;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.setting-row{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.setting-row:last-child{margin-bottom:0}
+.setting-label{flex:1;font-size:13px;font-weight:600;color:var(--muted)}
+.setting-input{width:220px;background:var(--surface);border:1px solid var(--border2);border-radius:8px;padding:9px 13px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .2s}
+.setting-input:focus{border-color:var(--accent)}
+.btn-save{padding:10px 20px;background:var(--accent);border:none;border-radius:8px;color:#000;font-family:'Syne',sans-serif;font-size:13px;font-weight:800;cursor:pointer;transition:opacity .2s}
+.btn-save:hover{opacity:.85}
+.save-confirm{display:none;font-size:12px;font-weight:700;color:var(--green);margin-left:8px}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--green);color:#000;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:700;transform:translateY(80px);opacity:0;transition:all .3s;z-index:999}
+.toast.show{transform:translateY(0);opacity:1}
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes scan{0%{top:15%;opacity:0}20%{opacity:1}80%{opacity:1}100%{top:85%;opacity:0}}
+@media(max-width:600px){
+  .pros-cons{grid-template-columns:1fr}
+  .card-top{flex-direction:column}
+  .setting-row{flex-direction:column;align-items:flex-start}
+  .setting-input{width:100%}
+  .input-row{flex-direction:column}
+  .nav-btn span.nav-label{display:none}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="showPage('search')">
+    <div class="logo-icon">🎯</div>
+    CAZR
+  </div>
+  <div class="header-right">
+    <div class="lang-switcher">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">EN</button>
+    </div>
+    <button class="nav-btn active" id="nav-search" onclick="showPage('search')"><span class="nav-label" data-i18n="nav_search">Buscar</span></button>
+    <button class="nav-btn" id="nav-affiliate" onclick="showPage('affiliate')"><span class="nav-label" data-i18n="nav_affiliate">Afiliados</span></button>
+    <button class="nav-btn" id="nav-settings" onclick="showPage('settings')">⚙</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- SEARCH PAGE -->
+  <div class="page active" id="page-search">
+    <div class="hero">
+      <div class="hero-tag" data-i18n="hero_tag">🔥 Encuentra el mejor precio</div>
+      <h1>CAZR</h1>
+      <p data-i18n="hero_sub">Busca por texto, código de barras o foto. Compara Amazon, Walmart y Best Buy al instante.</p>
+    </div>
+
+    <div class="search-box">
+      <span class="search-label" data-i18n="search_label">¿Qué quieres comprar?</span>
+      <div class="input-row">
+        <input class="search-input" id="searchInput" type="text"
+          data-placeholder-i18n="search_placeholder"
+          placeholder="Ej: iPad Pro M2 256GB WiFi..."
+          onkeydown="if(event.key==='Enter') doSearch()"/>
+        <button class="btn-search" id="searchBtn" onclick="doSearch()" data-i18n="btn_search">🔍 BUSCAR</button>
+      </div>
+      <div class="input-modes">
+        <button class="mode-btn active" id="mode-text" onclick="setMode('text')">⌨️ <span data-i18n="mode_text">Texto</span></button>
+        <button class="mode-btn" id="mode-barcode" onclick="setMode('barcode')">▦ <span data-i18n="mode_barcode">Código de barras</span></button>
+        <button class="mode-btn" id="mode-image" onclick="setMode('image')">🖼️ <span data-i18n="mode_image">Subir imagen</span></button>
+        <button class="mode-btn" id="mode-camera" onclick="setMode('camera')">📷 <span data-i18n="mode_camera">Tomar foto</span></button>
+      </div>
+      <div class="barcode-row" id="barcodeRow">
+        <input class="barcode-input" id="barcodeInput" type="text" data-placeholder-i18n="barcode_placeholder" placeholder="Ej: 194252038598"/>
+        <button class="btn-search" onclick="searchBarcode()" data-i18n="btn_search">BUSCAR</button>
+      </div>
+      <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">🖼️</div>
+        <p data-i18n="upload_hint">Toca para subir una foto del producto<br><small>JPG, PNG, WEBP</small></p>
+        <img id="preview-img" alt="preview"/>
+        <input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)"/>
+      </div>
+      <div class="upload-area" id="cameraArea" onclick="openCamera()" style="display:none">
+        <div class="upload-icon">📷</div>
+        <p data-i18n="camera_hint">Toca para abrir la cámara</p>
+        <img id="camera-preview" alt="capture"/>
+      </div>
+    </div>
+
+    <div class="status-bar" id="statusBar">
+      <div class="spinner"></div>
+      <span id="statusText" data-i18n="status_searching">Buscando los mejores precios...</span>
+    </div>
+
+    <div id="results">
+      <div class="welcome" id="welcomeState">
+        <div class="welcome-icon">🎯</div>
+        <h2 data-i18n="welcome_title">LISTO PARA CAZAR</h2>
+        <p data-i18n="welcome_sub">Escribe un producto, su código de barras, o sube una foto.</p>
+        <div class="tip-chips">
+          <div class="tip-chip" onclick="quickSearch('iPhone 16 Pro 256GB')">📱 iPhone 16 Pro</div>
+          <div class="tip-chip" onclick="quickSearch('iPad Air M2 WiFi 64GB')">💻 iPad Air M2</div>
+          <div class="tip-chip" onclick="quickSearch('Samsung 65 inch 4K QLED TV')">📺 Samsung 65"</div>
+          <div class="tip-chip" onclick="quickSearch('Sony WH-1000XM5 headphones')">🎧 Sony XM5</div>
+          <div class="tip-chip" onclick="quickSearch('Nintendo Switch OLED')">🎮 Switch OLED</div>
+        </div>
+      </div>
+      <div id="resultsList"></div>
+    </div>
+  </div>
+
+  <!-- AFFILIATE PAGE -->
+  <div class="page" id="page-affiliate">
+    <div class="hero" style="margin-bottom:32px">
+      <div class="hero-tag" data-i18n="aff_hero_tag">💰 Gana comisiones</div>
+      <h1 style="font-size:clamp(48px,10vw,80px)" data-i18n="aff_hero_title">AFILIADOS</h1>
+      <p data-i18n="aff_hero_sub">Regístrate en los programas de afiliados y gana dinero con cada compra.</p>
+    </div>
+    <div class="tabs">
+      <div class="tab-header">
+        <button class="tab-btn active" onclick="showTab('amazon',event)">🛒 Amazon</button>
+        <button class="tab-btn" onclick="showTab('walmart',event)">🔵 Walmart</button>
+        <button class="tab-btn" onclick="showTab('bestbuy',event)">💙 Best Buy</button>
+        <button class="tab-btn" onclick="showTab('earnings',event)">📊 <span data-i18n="tab_earnings">Ingresos</span></button>
+      </div>
+      <div class="tab-content active" id="tab-amazon">
+        <p class="guide-intro" data-i18n="amazon_intro">Amazon Associates es el programa de afiliados más grande del mundo. Gana entre <strong style="color:var(--accent)">1% y 10%</strong> de comisión. Es gratis y la aprobación es rápida.</p>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4 data-i18n="amz_s1_title">Crea tu cuenta de Amazon</h4><p data-i18n="amz_s1_body">Necesitas una cuenta de Amazon activa. Si ya tienes una, puedes usarla directamente.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4 data-i18n="amz_s2_title">Regístrate en Amazon Associates</h4><p data-i18n="amz_s2_body">Ve al sitio oficial y haz clic en "Join Now for Free".</p><a class="step-link" href="https://affiliate-program.amazon.com" target="_blank">→ affiliate-program.amazon.com</a></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4 data-i18n="amz_s3_title">Completa tu perfil</h4><p data-i18n="amz_s3_body">Ingresa tus datos, nombre de tu app (pon "CAZR"), y cómo vas a promover productos.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><h4 data-i18n="amz_s4_title">Obtén tu Tracking ID</h4><p data-i18n="amz_s4_body">Tu ID lucirá así: <code style="color:var(--accent);font-family:monospace">tunombre-20</code>. Pégalo en Configuración.</p></div></div>
+        <div class="step"><div class="step-num">5</div><div class="step-body"><h4 data-i18n="amz_s5_title">Genera tus primeras ventas</h4><p data-i18n="amz_s5_body">Amazon requiere al menos 3 ventas en los primeros 180 días para mantener la cuenta activa.</p></div></div>
+      </div>
+      <div class="tab-content" id="tab-walmart">
+        <p class="guide-intro" data-i18n="walmart_intro">Walmart Affiliate Program usa Impact y ofrece <strong style="color:var(--accent)">1% a 4%</strong> de comisión en millones de productos.</p>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4 data-i18n="wmt_s1_title">Regístrate en Impact</h4><p data-i18n="wmt_s1_body">Walmart usa la plataforma Impact. Crea una cuenta allí primero.</p><a class="step-link" href="https://www.impact.com" target="_blank">→ impact.com</a></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4 data-i18n="wmt_s2_title">Busca Walmart en el marketplace</h4><p data-i18n="wmt_s2_body">Dentro de Impact, busca "Walmart" y solicita unirte al programa.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4 data-i18n="wmt_s3_title">Espera aprobación</h4><p data-i18n="wmt_s3_body">El proceso toma 1–5 días. Recibirás un email de confirmación.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><h4 data-i18n="wmt_s4_title">Configura tu ID</h4><p data-i18n="wmt_s4_body">Una vez aprobado, copia tu ID del dashboard de Impact y pégalo en Configuración.</p></div></div>
+      </div>
+      <div class="tab-content" id="tab-bestbuy">
+        <p class="guide-intro" data-i18n="bb_intro">Best Buy Affiliate Program también usa Impact. Comisiones de <strong style="color:var(--accent)">0.5% a 2%</strong> en electrónica de alto valor.</p>
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4 data-i18n="bb_s1_title">Cuenta en Impact</h4><p data-i18n="bb_s1_body">Si ya te registraste para Walmart, usa la misma cuenta de Impact.</p><a class="step-link" href="https://www.impact.com" target="_blank">→ impact.com</a></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4 data-i18n="bb_s2_title">Busca Best Buy en Impact</h4><p data-i18n="bb_s2_body">En el marketplace de Impact, busca "Best Buy" y aplica al programa.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4 data-i18n="bb_s3_title">Describe tu canal</h4><p data-i18n="bb_s3_body">Best Buy prefiere aplicantes con app o sitio web. Describe CAZR como plataforma de comparación de precios.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><h4 data-i18n="bb_s4_title">Activa tus links</h4><p data-i18n="bb_s4_body">Una vez aprobado, copia tu ID y configúralo en la app.</p></div></div>
+      </div>
+      <div class="tab-content" id="tab-earnings">
+        <p class="guide-intro" data-i18n="earnings_intro">Estima cuánto puedes ganar según el tráfico que generes.</p>
+        <div class="settings-section">
+          <h3 data-i18n="earnings_title">📊 Calculadora de Comisiones</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px">
+            <div style="flex:1;min-width:110px">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:1px" data-i18n="calc_clicks">CLICKS/MES</div>
+              <input class="setting-input" id="calc-clicks" type="number" value="500" style="width:100%" oninput="calcEarnings()"/>
+            </div>
+            <div style="flex:1;min-width:110px">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:1px" data-i18n="calc_conv">CONVERSIÓN %</div>
+              <input class="setting-input" id="calc-conv" type="number" value="3" style="width:100%" oninput="calcEarnings()"/>
+            </div>
+            <div style="flex:1;min-width:110px">
+              <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:6px;letter-spacing:1px" data-i18n="calc_price">PRECIO PROM. $</div>
+              <input class="setting-input" id="calc-price" type="number" value="200" style="width:100%" oninput="calcEarnings()"/>
+            </div>
+          </div>
+          <div style="padding:20px;background:var(--surface);border-radius:10px;text-align:center">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--accent)" id="calc-monthly">$90</div>
+            <div style="font-size:12px;color:var(--muted)" data-i18n="calc_monthly_label">estimado mensual (comisión 3%)</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--muted);margin-top:4px" id="calc-yearly">$1,080/año</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS PAGE -->
+  <div class="page" id="page-settings">
+    <div class="hero" style="margin-bottom:32px">
+      <div class="hero-tag" data-i18n="cfg_tag">⚙️ Configuración</div>
+      <h1 style="font-size:clamp(48px,10vw,80px)" data-i18n="cfg_title">CONFIG</h1>
+      <p data-i18n="cfg_sub">Agrega tus IDs de afiliado para monetizar todos los links automáticamente.</p>
+    </div>
+    <div class="settings-section">
+      <h3>🛒 Amazon Associates</h3>
+      <div class="setting-row">
+        <span class="setting-label" data-i18n="cfg_tracking_id">Tu Tracking ID</span>
+        <input class="setting-input" id="set-amazon" placeholder="tunombre-20"/>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>🔵 Walmart (Impact)</h3>
+      <div class="setting-row">
+        <span class="setting-label" data-i18n="cfg_affiliate_id">Tu Affiliate ID</span>
+        <input class="setting-input" id="set-walmart" data-placeholder-i18n="cfg_impact_placeholder" placeholder="Tu ID de Impact"/>
+      </div>
+    </div>
+    <div class="settings-section">
+      <h3>💙 Best Buy (Impact)</h3>
+      <div class="setting-row">
+        <span class="setting-label" data-i18n="cfg_affiliate_id">Tu Affiliate ID</span>
+        <input class="setting-input" id="set-bestbuy" data-placeholder-i18n="cfg_impact_placeholder" placeholder="Tu ID de Impact"/>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;margin-top:4px">
+      <button class="btn-save" onclick="saveSettings()" data-i18n="cfg_save">💾 Guardar</button>
+      <span class="save-confirm" id="saveConfirm" data-i18n="cfg_saved">✓ ¡Guardado!</span>
+    </div>
+    <div class="affiliate-note" style="margin-top:24px">
+      <span data-i18n="cfg_note"><strong>¿Cómo funciona?</strong> Cuando agregas tus IDs, todos los links de resultados se convierten automáticamente en links de afiliado. Si aún no tienes IDs, ve a la sección <strong>Afiliados</strong>.</span>
+    </div>
+  </div>
+
+</main>
+
+<!-- CAMERA MODAL -->
+<div class="camera-modal" id="cameraModal">
+  <div class="camera-lbl" data-i18n="cam_title">📷 APUNTA AL PRODUCTO</div>
+  <div class="camera-viewfinder">
+    <video id="cameraVideo" autoplay playsinline muted></video>
+    <div class="camera-overlay">
+      <div class="camera-corner tl"></div><div class="camera-corner tr"></div>
+      <div class="camera-corner bl"></div><div class="camera-corner br"></div>
+      <div class="camera-scan-line"></div>
+    </div>
+  </div>
+  <canvas id="cameraCanvas"></canvas>
+  <div class="camera-lbl" id="camStatus" data-i18n="cam_ready">Listo — apunta y captura</div>
+  <div class="camera-actions">
+    <button class="btn-close-cam" onclick="closeCamera()">✕</button>
+    <button class="btn-capture" onclick="capturePhoto()">📸</button>
+    <button class="btn-flip" onclick="flipCamera()">🔄</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== I18N ==========
+const TRANSLATIONS = {
+  es: {
+    nav_search:'Buscar', nav_affiliate:'Afiliados',
+    hero_tag:'🔥 Encuentra el mejor precio',
+    hero_sub:'Busca por texto, código de barras o foto. Compara Amazon, Walmart y Best Buy al instante.',
+    search_label:'¿Qué quieres comprar?',
+    search_placeholder:'Ej: iPad Pro M2 256GB WiFi...',
+    btn_search:'🔍 BUSCAR',
+    mode_text:'Texto', mode_barcode:'Código de barras', mode_image:'Subir imagen', mode_camera:'Tomar foto',
+    barcode_placeholder:'Ej: 194252038598',
+    upload_hint:'Toca para subir una foto del producto',
+    camera_hint:'Toca para abrir la cámara',
+    status_searching:'Buscando los mejores precios...',
+    status_analyzing:'Analizando producto...',
+    status_comparing:'Comparando precios...',
+    status_coupons:'Buscando cupones disponibles...',
+    status_preparing:'Preparando resultados...',
+    welcome_title:'LISTO PARA CAZAR',
+    welcome_sub:'Escribe un producto, su código de barras, o sube una foto.',
+    results_label:'RESULTADOS',
+    results_count:'opciones encontradas',
+    btn_view:'Ver en',
+    btn_copy:'📋 Copiar link',
+    btn_copied:'✓ Copiado!',
+    best_deal:'🏆 MEJOR OFERTA',
+    aff_link:'Link Afiliado',
+    aff_upsell:'Convierte este link en afiliado tuyo: ve a',
+    aff_upsell2:'y agrega tu ID para ganar comisiones.',
+    pros_title:'Ventajas', cons_title:'Desventajas',
+    aff_hero_tag:'💰 Gana comisiones',
+    aff_hero_title:'AFILIADOS',
+    aff_hero_sub:'Regístrate en los programas de afiliados y gana dinero con cada compra.',
+    tab_earnings:'Ingresos',
+    amazon_intro:'Amazon Associates es el programa de afiliados más grande del mundo. Gana entre 1% y 10% de comisión. Es gratis y la aprobación es rápida.',
+    amz_s1_title:'Crea tu cuenta de Amazon', amz_s1_body:'Necesitas una cuenta de Amazon activa.',
+    amz_s2_title:'Regístrate en Amazon Associates', amz_s2_body:'Haz clic en "Join Now for Free".',
+    amz_s3_title:'Completa tu perfil', amz_s3_body:'Ingresa tus datos y el nombre de tu app (pon "CAZR").',
+    amz_s4_title:'Obtén tu Tracking ID', amz_s4_body:'Tu ID lucirá así: tunombre-20. Pégalo en Configuración.',
+    amz_s5_title:'Genera tus primeras ventas', amz_s5_body:'Amazon requiere 3 ventas en los primeros 180 días.',
+    walmart_intro:'Walmart Affiliate Program usa Impact y ofrece 1% a 4% de comisión.',
+    wmt_s1_title:'Regístrate en Impact', wmt_s1_body:'Walmart usa la plataforma Impact.',
+    wmt_s2_title:'Busca Walmart en Impact', wmt_s2_body:'Busca "Walmart" y solicita unirte.',
+    wmt_s3_title:'Espera aprobación', wmt_s3_body:'El proceso toma 1–5 días hábiles.',
+    wmt_s4_title:'Configura tu ID', wmt_s4_body:'Copia tu ID del dashboard de Impact.',
+    bb_intro:'Best Buy usa Impact. Comisiones de 0.5% a 2% en electrónica.',
+    bb_s1_title:'Cuenta en Impact', bb_s1_body:'Usa la misma cuenta si ya tienes para Walmart.',
+    bb_s2_title:'Busca Best Buy en Impact', bb_s2_body:'Busca "Best Buy" y aplica al programa.',
+    bb_s3_title:'Describe tu canal', bb_s3_body:'Describe CAZR como plataforma de comparación de precios.',
+    bb_s4_title:'Activa tus links', bb_s4_body:'Copia tu ID y configúralo en la app.',
+    earnings_intro:'Estima cuánto puedes ganar según el tráfico.',
+    earnings_title:'📊 Calculadora de Comisiones',
+    calc_clicks:'CLICKS/MES', calc_conv:'CONVERSIÓN %', calc_price:'PRECIO PROM. $',
+    calc_monthly_label:'estimado mensual (comisión 3%)',
+    cfg_tag:'⚙️ Configuración', cfg_title:'CONFIG',
+    cfg_sub:'Agrega tus IDs de afiliado para monetizar todos los links automáticamente.',
+    cfg_tracking_id:'Tu Tracking ID', cfg_affiliate_id:'Tu Affiliate ID',
+    cfg_impact_placeholder:'Tu ID de Impact',
+    cfg_save:'💾 Guardar', cfg_saved:'✓ ¡Guardado!',
+    cfg_note:'<strong>¿Cómo funciona?</strong> Cuando agregas tus IDs, todos los links de resultados se convierten automáticamente en links de afiliado. Si aún no tienes IDs, ve a la sección <strong>Afiliados</strong>.',
+    cam_title:'📷 APUNTA AL PRODUCTO',
+    cam_ready:'Listo — apunta y captura',
+    toast_copied:'✓ Link copiado',
+    toast_saved:'✓ Configuración guardada',
+    toast_photo:'📸 Foto capturada. Toca BUSCAR.',
+    toast_enter_query:'Escribe qué quieres buscar',
+    toast_enter_barcode:'Ingresa un código de barras',
+    tip_label:'💡 Tip:',
+    free_shipping:'Envío gratis',
+    in_stock:'En stock',
+    config_section:'Configuración',
+  },
+  en: {
+    nav_search:'Search', nav_affiliate:'Affiliates',
+    hero_tag:'🔥 Find the best price',
+    hero_sub:'Search by text, barcode, or photo. Compare Amazon, Walmart & Best Buy instantly.',
+    search_label:'What do you want to buy?',
+    search_placeholder:'e.g. iPad Pro M2 256GB WiFi...',
+    btn_search:'🔍 SEARCH',
+    mode_text:'Text', mode_barcode:'Barcode', mode_image:'Upload image', mode_camera:'Take photo',
+    barcode_placeholder:'e.g. 194252038598',
+    upload_hint:'Tap to upload a product photo',
+    camera_hint:'Tap to open camera',
+    status_searching:'Searching for the best prices...',
+    status_analyzing:'Analyzing product...',
+    status_comparing:'Comparing prices...',
+    status_coupons:'Looking for available coupons...',
+    status_preparing:'Preparing results...',
+    welcome_title:'READY TO HUNT',
+    welcome_sub:'Type a product name, its barcode, or upload a photo.',
+    results_label:'RESULTS',
+    results_count:'options found',
+    btn_view:'View at',
+    btn_copy:'📋 Copy link',
+    btn_copied:'✓ Copied!',
+    best_deal:'🏆 BEST DEAL',
+    aff_link:'Affiliate Link',
+    aff_upsell:'Turn this into your affiliate link: go to',
+    aff_upsell2:'and add your ID to earn commissions.',
+    pros_title:'Pros', cons_title:'Cons',
+    aff_hero_tag:'💰 Earn commissions',
+    aff_hero_title:'AFFILIATES',
+    aff_hero_sub:'Sign up for affiliate programs and earn money on every purchase.',
+    tab_earnings:'Earnings',
+    amazon_intro:'Amazon Associates is the world\'s largest affiliate program. Earn between 1% and 10% commission. It\'s free and approval is fast.',
+    amz_s1_title:'Create your Amazon account', amz_s1_body:'You need an active Amazon account.',
+    amz_s2_title:'Sign up for Amazon Associates', amz_s2_body:'Click "Join Now for Free".',
+    amz_s3_title:'Complete your profile', amz_s3_body:'Enter your details and app name (use "CAZR").',
+    amz_s4_title:'Get your Tracking ID', amz_s4_body:'Your ID will look like: yourname-20. Paste it in Settings.',
+    amz_s5_title:'Generate your first sales', amz_s5_body:'Amazon requires 3 sales in the first 180 days.',
+    walmart_intro:'Walmart Affiliate Program uses Impact and offers 1% to 4% commission.',
+    wmt_s1_title:'Sign up on Impact', wmt_s1_body:'Walmart uses the Impact platform.',
+    wmt_s2_title:'Find Walmart on Impact', wmt_s2_body:'Search "Walmart" and request to join.',
+    wmt_s3_title:'Wait for approval', wmt_s3_body:'The process takes 1–5 business days.',
+    wmt_s4_title:'Set up your ID', wmt_s4_body:'Copy your ID from the Impact dashboard.',
+    bb_intro:'Best Buy uses Impact. Commissions of 0.5% to 2% on electronics.',
+    bb_s1_title:'Impact account', bb_s1_body:'Use the same account if you already have one for Walmart.',
+    bb_s2_title:'Find Best Buy on Impact', bb_s2_body:'Search "Best Buy" and apply.',
+    bb_s3_title:'Describe your channel', bb_s3_body:'Describe CAZR as a price comparison platform.',
+    bb_s4_title:'Activate your links', bb_s4_body:'Copy your ID and set it up in the app.',
+    earnings_intro:'Estimate how much you can earn based on your traffic.',
+    earnings_title:'📊 Commission Calculator',
+    calc_clicks:'CLICKS/MONTH', calc_conv:'CONVERSION %', calc_price:'AVG PRICE $',
+    calc_monthly_label:'estimated monthly (3% commission)',
+    cfg_tag:'⚙️ Settings', cfg_title:'SETTINGS',
+    cfg_sub:'Add your affiliate IDs to automatically monetize all links.',
+    cfg_tracking_id:'Your Tracking ID', cfg_affiliate_id:'Your Affiliate ID',
+    cfg_impact_placeholder:'Your Impact ID',
+    cfg_save:'💾 Save', cfg_saved:'✓ Saved!',
+    cfg_note:'<strong>How does it work?</strong> When you add your IDs, all result links automatically become your affiliate links. If you don\'t have IDs yet, go to the <strong>Affiliates</strong> section.',
+    cam_title:'📷 AIM AT THE PRODUCT',
+    cam_ready:'Ready — aim and capture',
+    toast_copied:'✓ Link copied',
+    toast_saved:'✓ Settings saved',
+    toast_photo:'📸 Photo captured. Tap SEARCH.',
+    toast_enter_query:'Enter what you want to search',
+    toast_enter_barcode:'Enter a barcode',
+    tip_label:'💡 Tip:',
+    free_shipping:'Free shipping',
+    in_stock:'In stock',
+    config_section:'Settings',
+  }
+};
+
+let currentLang = localStorage.getItem('cazr_lang') || 'es';
+
+function t(key){ return TRANSLATIONS[currentLang][key] || TRANSLATIONS['es'][key] || key; }
+
+function setLang(lang){
+  currentLang = lang;
+  localStorage.setItem('cazr_lang', lang);
+  document.getElementById('btn-es').classList.toggle('active', lang==='es');
+  document.getElementById('btn-en').classList.toggle('active', lang==='en');
+  document.documentElement.lang = lang;
+  applyTranslations();
+}
+
+function applyTranslations(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const key = el.getAttribute('data-i18n');
+    el.innerHTML = t(key);
+  });
+  document.querySelectorAll('[data-placeholder-i18n]').forEach(el=>{
+    el.placeholder = t(el.getAttribute('data-placeholder-i18n'));
+  });
+}
+
+// ========== STATE ==========
+let currentMode = 'text';
+let uploadedImageBase64 = null;
+let affiliateIds = {amazon:'',walmart:'',bestbuy:''};
+
+function loadSettings(){
+  const s = localStorage.getItem('cazr_affiliate');
+  if(s){ affiliateIds = JSON.parse(s); }
+  document.getElementById('set-amazon').value = affiliateIds.amazon||'';
+  document.getElementById('set-walmart').value = affiliateIds.walmart||'';
+  document.getElementById('set-bestbuy').value = affiliateIds.bestbuy||'';
+}
+loadSettings();
+applyTranslations();
+
+// ========== NAVIGATION ==========
+function showPage(page){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  ['nav-search','nav-affiliate','nav-settings'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  const map={search:'nav-search',affiliate:'nav-affiliate',settings:'nav-settings'};
+  document.getElementById(map[page])?.classList.add('active');
+}
+
+// ========== MODE ==========
+function setMode(mode){
+  currentMode = mode;
+  document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mode-'+mode).classList.add('active');
+  document.getElementById('uploadArea').classList.toggle('show', mode==='image');
+  document.getElementById('barcodeRow').classList.toggle('show', mode==='barcode');
+  document.getElementById('cameraArea').style.display = mode==='camera' ? 'block' : 'none';
+  if(mode==='text') document.getElementById('searchInput').focus();
+}
+
+// ========== IMAGE ==========
+function handleImageUpload(e){
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    uploadedImageBase64 = ev.target.result.split(',')[1];
+    const img = document.getElementById('preview-img');
+    img.src = ev.target.result; img.style.display='block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ========== CAMERA ==========
+let cameraStream = null, facingMode = 'environment';
+async function openCamera(){
+  document.getElementById('cameraModal').classList.add('open');
+  document.getElementById('camStatus').textContent = '...';
+  await startCamera();
+}
+async function startCamera(){
+  if(cameraStream) cameraStream.getTracks().forEach(t=>t.stop());
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({video:{facingMode,width:{ideal:1280},height:{ideal:720}},audio:false});
+    const v = document.getElementById('cameraVideo');
+    v.srcObject = cameraStream; await v.play();
+    document.getElementById('camStatus').textContent = t('cam_ready');
+  } catch(e){ document.getElementById('camStatus').textContent = '⚠ '+e.message; }
+}
+function flipCamera(){ facingMode = facingMode==='environment'?'user':'environment'; startCamera(); }
+function closeCamera(){
+  if(cameraStream){ cameraStream.getTracks().forEach(t=>t.stop()); cameraStream=null; }
+  document.getElementById('cameraModal').classList.remove('open');
+}
+function capturePhoto(){
+  const v=document.getElementById('cameraVideo'), c=document.getElementById('cameraCanvas');
+  c.width=v.videoWidth; c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  const dataUrl=c.toDataURL('image/jpeg',0.92);
+  uploadedImageBase64=dataUrl.split(',')[1];
+  const p=document.getElementById('camera-preview');
+  p.src=dataUrl; p.style.display='block';
+  closeCamera();
+  showToast(t('toast_photo'));
+}
+
+// ========== QUICK SEARCH ==========
+function quickSearch(q){ document.getElementById('searchInput').value=q; setMode('text'); doSearch(); }
+
+// ========== BARCODE ==========
+function searchBarcode(){
+  const code=document.getElementById('barcodeInput').value.trim();
+  if(!code){ showToast(t('toast_enter_barcode')); return; }
+  document.getElementById('searchInput').value='Barcode: '+code;
+  doSearch();
+}
+
+// ========== SEARCH ==========
+async function doSearch(){
+  const query = currentMode==='barcode'
+    ? document.getElementById('barcodeInput').value.trim()
+    : document.getElementById('searchInput').value.trim();
+  if(!query && !uploadedImageBase64){ showToast(t('toast_enter_query')); return; }
+
+  document.getElementById('welcomeState').style.display='none';
+  document.getElementById('resultsList').innerHTML='';
+  document.getElementById('statusBar').classList.add('show');
+  document.getElementById('searchBtn').disabled=true;
+
+  const steps=[t('status_analyzing'),t('status_comparing'),t('status_coupons'),t('status_preparing')];
+  let si=0;
+  document.getElementById('statusText').textContent=t('status_searching');
+  const stInt=setInterval(()=>{ if(si<steps.length) document.getElementById('statusText').textContent=steps[si++]; },1400);
+
+  try {
+    const messages=buildMessages(query);
+    const res=await fetch('/api/search',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({system:buildSystemPrompt(),messages})
+    });
+    clearInterval(stInt);
+    document.getElementById('statusBar').classList.remove('show');
+    document.getElementById('searchBtn').disabled=false;
+    if(!res.ok){ const e=await res.json(); throw new Error(e.error||'Server error'); }
+    const data=await res.json();
+    const text=data.content?.[0]?.text||'';
+    const match=text.replace(/```json|```/g,'').trim().match(/\{[\s\S]*\}/);
+    if(!match) throw new Error('Invalid response format');
+    renderResults(JSON.parse(match[0]));
+  } catch(err){
+    clearInterval(stInt);
+    document.getElementById('statusBar').classList.remove('show');
+    document.getElementById('searchBtn').disabled=false;
+    document.getElementById('resultsList').innerHTML=`<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">⚠️</div><p style="font-weight:700;color:var(--text)">Error</p><p style="font-size:13px;margin-top:6px">${err.message}</p></div>`;
+  }
+}
+
+function buildMessages(query){
+  if(uploadedImageBase64&&(currentMode==='image'||currentMode==='camera')){
+    return [{role:'user',content:[
+      {type:'image',source:{type:'base64',media_type:'image/jpeg',data:uploadedImageBase64}},
+      {type:'text',text:`Analyze this product image. Identify the exact model if possible. Find the best price on Amazon, Walmart and Best Buy USA. Additional info: ${query||'(image only)'}`}
+    ]}];
+  }
+  return [{role:'user',content:`Find the best price for: "${query}". Focus on Amazon, Walmart and Best Buy USA. Respond in ${currentLang==='en'?'English':'Spanish'}.`}];
+}
+
+function buildSystemPrompt(){
+  const lang = currentLang==='en'?'English':'Spanish';
+  return `You are CAZR, an AI price comparison expert for USA (Amazon, Walmart, Best Buy).
+Respond ONLY with valid JSON (no markdown, no extra text).
+All text fields in your JSON must be in ${lang}.
+
+JSON structure:
+{
+  "product_name": "Clean product name",
+  "product_summary": "1-2 sentence description",
+  "results": [
+    {
+      "rank": 1,
+      "store": "Amazon",
+      "store_emoji": "🛒",
+      "product_title": "Full product title",
+      "price": 999.99,
+      "original_price": 1099.99,
+      "discount_percent": 9,
+      "condition": "New",
+      "shipping": "Free with Prime",
+      "shipping_cost": 0,
+      "estimated_delivery": "1-2 days",
+      "availability": "In stock",
+      "rating": 4.7,
+      "review_count": 2847,
+      "coupon": { "available": true, "code": "SAVE10", "description": "10% off with this code" },
+      "membership_discount": "Prime: special price $979",
+      "affiliate_base_url": "https://www.amazon.com/dp/ASIN",
+      "pros": ["Fast Prime delivery","Easy 30-day returns"],
+      "cons": ["Slightly higher price","Limited color stock"],
+      "best_deal": true,
+      "deal_reason": "Best price + free shipping + coupon"
+    }
+  ],
+  "search_tips": "Relevant buying tip",
+  "price_alert": "Note on whether price is good/average/high vs historical"
+}
+
+Rules:
+- Always 5 results: 2-3 Amazon, 1-2 Walmart, 1 Best Buy
+- Use REALISTIC current 2025/2026 USA prices
+- Only one result has best_deal: true
+- affiliate_base_url must be real functional URLs
+- Respond ONLY the JSON`;
+}
+
+// ========== RENDER ==========
+function renderResults(data){
+  const list=document.getElementById('resultsList');
+  let html=`<div class="results-header"><div class="results-title">${t('results_label')}</div><div class="results-count">5 ${t('results_count')}</div></div>
+  <div class="product-query-info"><strong>${data.product_name}</strong> — ${data.product_summary}${data.price_alert?`<br><span style="color:var(--accent)">💡 ${data.price_alert}</span>`:''}</div>`;
+
+  (data.results||[]).forEach((r,i)=>{
+    const affLink=buildAffiliateLink(r);
+    const discount=r.discount_percent?`<span class="tag tag-red">-${r.discount_percent}%</span>`:'';
+    const ship=r.shipping_cost===0?`<span class="tag tag-green">🚚 ${r.shipping||t('free_shipping')}</span>`:`<span class="tag tag-gray">🚚 $${r.shipping_cost}</span>`;
+    const stock=`<span class="tag ${r.availability&&r.availability.toLowerCase().includes('stock')?'tag-green':'tag-red'}">${r.availability||t('in_stock')}</span>`;
+    const rating=r.rating?`<span class="tag tag-yellow">⭐ ${r.rating} (${(r.review_count||0).toLocaleString()})</span>`:'';
+    const delivery=r.estimated_delivery?`<span class="tag tag-blue">📦 ${r.estimated_delivery}</span>`:'';
+    const member=r.membership_discount?`<span class="tag tag-blue">👑 ${r.membership_discount}</span>`:'';
+    const coupon=r.coupon?.available?`<div class="coupon-box"><div class="coupon-icon">🏷️</div><div><div class="coupon-code">${r.coupon.code}</div><div class="coupon-desc">${r.coupon.description}</div></div></div>`:'';
+    const origPrice=r.original_price&&r.original_price>r.price?`<small style="text-decoration:line-through;color:var(--muted);font-family:'Syne',sans-serif;font-size:13px;margin-left:6px">$${r.original_price.toLocaleString()}</small>`:'';
+    const pros=(r.pros||[]).map(p=>`<li>${p}</li>`).join('');
+    const cons=(r.cons||[]).map(c=>`<li>${c}</li>`).join('');
+    const affUpsell=!hasAffId(r.store)?`<div class="affiliate-note" style="margin-top:10px">⚡ ${t('aff_upsell')} <strong>${t('config_section')}</strong> ${t('aff_upsell2')}</div>`:'';
+
+    html+=`<div class="result-card ${r.best_deal?'best-deal':''}">
+      ${r.best_deal?`<div class="best-deal-badge">${t('best_deal')}</div>`:''}
+      <div class="card-top">
+        <div class="store-badge">${r.store_emoji||'🛍️'}</div>
+        <div class="card-info">
+          <div class="card-store">${r.store} · #${r.rank}</div>
+          <div class="card-name" title="${r.product_title}">${r.product_title}</div>
+          <div class="card-price">$${(r.price||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}${origPrice}</div>
+        </div>
+      </div>
+      <div class="card-meta">${discount}${ship}${stock}${rating}${delivery}${member}</div>
+      ${coupon}
+      <div class="pros-cons">
+        <div class="pros"><div class="pros-title">${t('pros_title')}</div><ul>${pros}</ul></div>
+        <div class="cons"><div class="cons-title">${t('cons_title')}</div><ul>${cons}</ul></div>
+      </div>
+      ${r.best_deal&&r.deal_reason?`<div style="margin-bottom:14px;font-size:12px;font-weight:600;color:var(--accent)">🏆 ${r.deal_reason}</div>`:''}
+      <div class="card-actions">
+        <a class="btn-buy" href="${affLink}" target="_blank" rel="noopener">🛒 ${t('btn_view')} ${r.store}${hasAffId(r.store)?' · '+t('aff_link'):''}</a>
+        <button class="btn-copy" id="copy-${i}" onclick="copyLink('${affLink}','copy-${i}')">${t('btn_copy')}</button>
+      </div>
+      ${affUpsell}
+    </div>`;
+  });
+
+  if(data.search_tips) html+=`<div class="affiliate-note">${t('tip_label')} ${data.search_tips}</div>`;
+  list.innerHTML=html;
+  list.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ========== AFFILIATE ==========
+function hasAffId(store){
+  const s=(store||'').toLowerCase();
+  if(s.includes('amazon')) return !!affiliateIds.amazon;
+  if(s.includes('walmart')) return !!affiliateIds.walmart;
+  if(s.includes('best buy')) return !!affiliateIds.bestbuy;
+  return false;
+}
+function buildAffiliateLink(r){
+  const store=(r.store||'').toLowerCase();
+  const base=r.affiliate_base_url||'#';
+  if(store.includes('amazon')&&affiliateIds.amazon){
+    try{ const u=new URL(base); u.searchParams.set('tag',affiliateIds.amazon); return u.toString(); }catch(e){ return base+'?tag='+affiliateIds.amazon; }
+  }
+  if(store.includes('walmart')&&affiliateIds.walmart) return `${base}${base.includes('?')?'&':'?'}affiliates_id=${affiliateIds.walmart}`;
+  if(store.includes('best buy')&&affiliateIds.bestbuy) return `${base}${base.includes('?')?'&':'?'}ref=${affiliateIds.bestbuy}`;
+  return base;
+}
+function copyLink(url,btnId){
+  navigator.clipboard.writeText(url).then(()=>{
+    const btn=document.getElementById(btnId);
+    btn.textContent=t('btn_copied'); btn.classList.add('copied');
+    setTimeout(()=>{ btn.textContent=t('btn_copy'); btn.classList.remove('copied'); },2000);
+  });
+}
+
+// ========== TABS ==========
+function showTab(tab,e){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(e) e.target.classList.add('active');
+  if(tab==='earnings') calcEarnings();
+}
+function calcEarnings(){
+  const clicks=parseFloat(document.getElementById('calc-clicks')?.value)||0;
+  const conv=parseFloat(document.getElementById('calc-conv')?.value)||0;
+  const price=parseFloat(document.getElementById('calc-price')?.value)||0;
+  const monthly=clicks*(conv/100)*price*0.03;
+  document.getElementById('calc-monthly').textContent='$'+monthly.toFixed(0);
+  document.getElementById('calc-yearly').textContent='$'+(monthly*12).toLocaleString('en-US',{minimumFractionDigits:0})+'/'+((currentLang==='en')?'yr':'año');
+}
+
+// ========== SETTINGS ==========
+function saveSettings(){
+  affiliateIds.amazon=document.getElementById('set-amazon').value.trim();
+  affiliateIds.walmart=document.getElementById('set-walmart').value.trim();
+  affiliateIds.bestbuy=document.getElementById('set-bestbuy').value.trim();
+  localStorage.setItem('cazr_affiliate',JSON.stringify(affiliateIds));
+  const c=document.getElementById('saveConfirm');
+  c.style.display='inline'; setTimeout(()=>c.style.display='none',2500);
+  showToast(t('toast_saved'));
+}
+
+// ========== TOAST ==========
+function showToast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'),2500);
+}
+
+calcEarnings();
+</script>
+</body>
+</html>
